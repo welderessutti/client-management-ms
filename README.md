@@ -78,6 +78,8 @@ de uso.
 
 Essa aplicação foi arquitetada da seguinte forma:
 
+![Aquitetura](images/architecture.jpg)
+
 ## Executando a aplicação
 
 ### Pré-requisitos
@@ -192,19 +194,19 @@ containers antes de executar a aplicação com o ambiente **stg***.
 ##### Windows (PowerShell)
 
 ```powershell
-$env:PROFILE="stg"; docker-compose up -d
+$env:PROFILE="stg"; docker compose up -d
 ```
 
 ##### Windows (CMD)
 
 ```cmd
-set PROFILE=stg && docker-compose up -d
+set PROFILE=stg && docker compose up -d
 ```
 
 ##### Linux ou macOS (Bash)
 
 ```bash
-PROFILE=stg docker-compose up -d
+PROFILE=stg docker compose up -d
 ```
 
 #### Passo 2: Executar os testes
