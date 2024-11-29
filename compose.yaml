@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres
+    container_name: db-postgres-client-management-ms
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: client
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    image: welderessutti/client-management-ms:latest
+    container_name: app-client-management-ms
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PROFILE: "${PROFILE:-prd}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/client"
+      SPRING_DATASOURCE_USERNAME: "postgres"
+      SPRING_DATASOURCE_PASSWORD: "postgres"

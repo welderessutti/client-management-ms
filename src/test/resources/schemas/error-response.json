@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": [
+    "timestamp",
+    "status",
+    "error",
+    "message",
+    "path"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "default": "",
+      "title": "The timestamp Schema",
+      "examples": [
+        "2024-11-17T19:41:21.6360864"
+      ]
+    },
+    "status": {
+      "type": "integer",
+      "default": 0,
+      "title": "The status Schema",
+      "examples": [
+        404
+      ]
+    },
+    "error": {
+      "type": "string",
+      "default": "",
+      "title": "The error Schema",
+      "examples": [
+        "Not Found"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "default": "",
+      "title": "The message Schema",
+      "examples": [
+        "Client not found with e-mail: joao@silva.com.b"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "default": "",
+      "title": "The path Schema",
+      "examples": [
+        "/client"
+      ]
+    }
+  },
+  "examples": [{
+    "timestamp": "2024-11-17T19:41:21.6360864",
+    "status": 404,
+    "error": "Not Found",
+    "message": "Client not found with e-mail: joao@silva.com.b",
+    "path": "/client"
+  }]
+}

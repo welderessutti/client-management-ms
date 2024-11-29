@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": [
+    "clients"
+  ],
+  "properties": {
+    "clients": {
+      "type": "array",
+      "default": [],
+      "title": "The clients Schema",
+      "items": {
+        "type": "object",
+        "default": {},
+        "title": "A Schema",
+        "required": [
+          "id",
+          "fullName",
+          "email",
+          "mobilePhoneNumber",
+          "cpf",
+          "address"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "default": 0,
+            "title": "The id Schema",
+            "examples": [
+              1
+            ]
+          },
+          "fullName": {
+            "type": "string",
+            "default": "",
+            "title": "The fullName Schema",
+            "examples": [
+              "João da Silva"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "default": "",
+            "title": "The email Schema",
+            "examples": [
+              "joao@silva.com.br"
+            ]
+          },
+          "mobilePhoneNumber": {
+            "type": "string",
+            "default": "",
+            "title": "The mobilePhoneNumber Schema",
+            "examples": [
+              "11-996541122"
+            ]
+          },
+          "cpf": {
+            "type": "object",
+            "default": {},
+            "title": "The cpf Schema",
+            "required": [
+              "documentNumber"
+            ],
+            "properties": {
+              "documentNumber": {
+                "type": "string",
+                "default": "",
+                "title": "The documentNumber Schema",
+                "examples": [
+                  "038.971.760-68"
+                ]
+              }
+            },
+            "examples": [{
+              "documentNumber": "038.971.760-68"
+            }]
+          },
+          "address": {
+            "type": "object",
+            "default": {},
+            "title": "The address Schema",
+            "required": [
+              "id",
+              "cep",
+              "street",
+              "complement",
+              "unit",
+              "number",
+              "neighborhood",
+              "locality",
+              "uf",
+              "state",
+              "region",
+              "ibge",
+              "gia",
+              "ddd",
+              "siafi"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "default": 0,
+                "title": "The id Schema",
+                "examples": [
+                  1
+                ]
+              },
+              "cep": {
+                "type": "string",
+                "default": "",
+                "title": "The cep Schema",
+                "examples": [
+                  "01001-000"
+                ]
+              },
+              "street": {
+                "type": "string",
+                "default": "",
+                "title": "The street Schema",
+                "examples": [
+                  "Praça da Sé"
+                ]
+              },
+              "complement": {
+                "type": "string",
+                "default": "",
+                "title": "The complement Schema",
+                "examples": [
+                  "lado ímpar"
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "default": "",
+                "title": "The unit Schema",
+                "examples": [
+                  ""
+                ]
+              },
+              "number": {
+                "type": "string",
+                "default": "",
+                "title": "The number Schema",
+                "examples": [
+                  "99"
+                ]
+              },
+              "neighborhood": {
+                "type": "string",
+                "default": "",
+                "title": "The neighborhood Schema",
+                "examples": [
+                  "Sé"
+                ]
+              },
+              "locality": {
+                "type": "string",
+                "default": "",
+                "title": "The locality Schema",
+                "examples": [
+                  "São Paulo"
+                ]
+              },
+              "uf": {
+                "type": "string",
+                "default": "",
+                "title": "The uf Schema",
+                "examples": [
+                  "SP"
+                ]
+              },
+              "state": {
+                "type": "string",
+                "default": "",
+                "title": "The state Schema",
+                "examples": [
+                  "São Paulo"
+                ]
+              },
+              "region": {
+                "type": "string",
+                "default": "",
+                "title": "The region Schema",
+                "examples": [
+                  "Sudeste"
+                ]
+              },
+              "ibge": {
+                "type": "string",
+                "default": "",
+                "title": "The ibge Schema",
+                "examples": [
+                  "3550308"
+                ]
+              },
+              "gia": {
+                "type": "string",
+                "default": "",
+                "title": "The gia Schema",
+                "examples": [
+                  "1004"
+                ]
+              },
+              "ddd": {
+                "type": "string",
+                "default": "",
+                "title": "The ddd Schema",
+                "examples": [
+                  "11"
+                ]
+              },
+              "siafi": {
+                "type": "string",
+                "default": "",
+                "title": "The siafi Schema",
+                "examples": [
+                  "7107"
+                ]
+              }
+            },
+            "examples": [{
+              "id": 1,
+              "cep": "01001-000",
+              "street": "Praça da Sé",
+              "complement": "lado ímpar",
+              "unit": "",
+              "number": "99",
+              "neighborhood": "Sé",
+              "locality": "São Paulo",
+              "uf": "SP",
+              "state": "São Paulo",
+              "region": "Sudeste",
+              "ibge": "3550308",
+              "gia": "1004",
+              "ddd": "11",
+              "siafi": "7107"
+            }]
+          }
+        },
+        "examples": [{
+          "id": 1,
+          "fullName": "João da Silva",
+          "email": "joao@silva.com.br",
+          "mobilePhoneNumber": "11-996541122",
+          "cpf": {
+            "documentNumber": "038.971.760-68"
+          },
+          "address": {
+            "id": 1,
+            "cep": "01001-000",
+            "street": "Praça da Sé",
+            "complement": "lado ímpar",
+            "unit": "",
+            "number": "99",
+            "neighborhood": "Sé",
+            "locality": "São Paulo",
+            "uf": "SP",
+            "state": "São Paulo",
+            "region": "Sudeste",
+            "ibge": "3550308",
+            "gia": "1004",
+            "ddd": "11",
+            "siafi": "7107"
+          }
+        }]
+      },
+      "examples": [
+        [{
+          "id": 1,
+          "fullName": "João da Silva",
+          "email": "joao@silva.com.br",
+          "mobilePhoneNumber": "11-996541122",
+          "cpf": {
+            "documentNumber": "038.971.760-68"
+          },
+          "address": {
+            "id": 1,
+            "cep": "01001-000",
+            "street": "Praça da Sé",
+            "complement": "lado ímpar",
+            "unit": "",
+            "number": "99",
+            "neighborhood": "Sé",
+            "locality": "São Paulo",
+            "uf": "SP",
+            "state": "São Paulo",
+            "region": "Sudeste",
+            "ibge": "3550308",
+            "gia": "1004",
+            "ddd": "11",
+            "siafi": "7107"
+          }
+        }]
+      ]
+    }
+  },
+  "examples": [{
+    "clients": [{
+      "id": 1,
+      "fullName": "João da Silva",
+      "email": "joao@silva.com.br",
+      "mobilePhoneNumber": "11-996541122",
+      "cpf": {
+        "documentNumber": "038.971.760-68"
+      },
+      "address": {
+        "id": 1,
+        "cep": "01001-000",
+        "street": "Praça da Sé",
+        "complement": "lado ímpar",
+        "unit": "",
+        "number": "99",
+        "neighborhood": "Sé",
+        "locality": "São Paulo",
+        "uf": "SP",
+        "state": "São Paulo",
+        "region": "Sudeste",
+        "ibge": "3550308",
+        "gia": "1004",
+        "ddd": "11",
+        "siafi": "7107"
+      }
+    }]
+  }]
+}
