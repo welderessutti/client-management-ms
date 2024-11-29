@@ -92,10 +92,11 @@ Essa aplicação foi arquitetada da seguinte forma:
 Para clonar o repositório, use o comando:
 
 ```bash
-git clone 
+git clone https://github.com/welderessutti/client-management-ms.git
 ```
 
-Caso não queira clonar o repositório, você pode baixá-lo em [GitHub]().
+Caso não queira clonar o repositório, você pode baixá-lo
+em [GitHub](https://github.com/welderessutti/client-management-ms).
 
 ### Passo 2: Executar a aplicação com Docker
 
