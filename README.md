@@ -130,6 +130,8 @@ http://localhost:8080/api/swagger-ui/index.html
 
 Lá você encontrará detalhes sobre todos os endpoints disponíveis, parâmetros de requisição e resposta.
 
+![Jacoco](images/swagger.png)
+
 ## Testes
 
 Práticas de TDD (Test-Driven Development) e BDD (Behavior-Driven Development) foram utilizadas ao longo do
@@ -257,6 +259,8 @@ allure generate target/allure-results
 
 Após gerar o relatório **Allure**, ele estará disponível no diretório raíz em: ``allure-report/index.html``
 
+![Allure](images/allure-report.png)
+
 ### Cucumber
 
 #### Passo 1: Executar os testes
@@ -268,6 +272,8 @@ em ambiente **stg**.
 
 Após executar o teste de comportamento, o relatório **Cucumber** é gerado automaticamente, e ele estará disponível no
 diretório: ``target/cucumber-reports/cucumber.html``
+
+![Cucumber](images/cucumber-report.png)
 
 ### Jacoco
 
@@ -284,3 +290,5 @@ mvn clean verify
 
 Após a execução dos testes, o relatório **Jacoco** é gerado automaticamente, e estará disponível no
 diretório: ``target/site/jacoco/index.html``
+
+![Jacoco](images/jacoco-report.png)
