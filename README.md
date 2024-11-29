@@ -180,8 +180,8 @@ mvn clean test -Pintegration-tests
 
 ##### Ambiente de Staging (stg):
 
-Antes de realizar o teste de sistema ou todos os testes juntos, é necessário executar a aplicação utilizando o ambiente
-**stg**.
+Antes de realizar o teste de comportamento ou todos os testes juntos, é necessário executar a aplicação utilizando o
+ambiente **stg**.
 
 Para isso, execute o comando abaixo conforme o shell que você estiver utilizando, para incluir a variável de ambiente e
 executar a aplicação com o ambiente **stg**:
