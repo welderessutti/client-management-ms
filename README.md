@@ -25,7 +25,8 @@ migração de schemas usando **Flyway**.
 Foram criadas exceções personalizas que são tratadas globalmente pelo **Rest Controller Advice** e **Exception
 Handler**, que retorna uma classe de erro contendo **timestamp**, **status code**, **error**, **message** e **path**.
 
-Possui integração por comunicação síncrona utilizando **OpenFeign** com a API **ViaCEP** para obter o endereço completo.
+Possui integração por comunicação síncrona utilizando **OpenFeign** com a API **ViaCEP** para obter o endereço completo
+do cliente.
 
 ## Funcionalidades e Endpoints
 
@@ -73,10 +74,10 @@ Para deletar um cliente basta passar seu **id** no endpoint.
 ## Arquitetura
 
 A arquitetura hexagonal consiste na ideia de utilizar portas e adaptadores para realizar a integração entre a camada
-externa e interna, isolando o core da aplicação para que alterações externas não interfiram na regra de negócio e casos
-de uso.
+externa e interna, isolando o core da aplicação para que alterações externas não interfiram nas regras de negócio e
+casos de uso.
 
-Essa aplicação foi arquitetada da seguinte forma:
+A arquitetura desta aplicação foi desenvolvida da seguinte forma:
 
 ![Aquitetura](images/architecture.jpg)
 
@@ -138,7 +139,7 @@ Lá você encontrará detalhes sobre todos os endpoints disponíveis, parâmetro
 
 Práticas de TDD (Test-Driven Development) e BDD (Behavior-Driven Development) foram utilizadas ao longo do
 desenvolvimento para criar testes unitários, de integração, de sistema e de comportamento, totalizando mais de **120**
-testes e mais de **90%** de coverage, segundo relatório do **Jacoco** e **Allure**.
+testes e mais de **90%** de coverage, conforme relatórios do **Jacoco** e **Allure**.
 
 Foram utilizadas a bibliotecas **JUnit 5**, **Mockito**, **REST-Assured** e **Cucumber** com linguagem **Gherkin**.
 
