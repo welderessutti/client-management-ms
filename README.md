@@ -112,8 +112,10 @@ comando abaixo para subir o container da aplicação e do banco de dados **Postg
 docker compose up -d
 ```
 
-O Docker tentará baixar a imagem no repositório do [Docker Hub](), caso ele não encontre a imagem, ele realizará a
-**build** da aplicação **(.jar)**, criará a imagem e executará os containers automaticamente.
+O Docker tentará baixar a imagem no repositório
+do [Docker Hub](https://hub.docker.com/repository/docker/welderessutti/client-management-ms/general), caso ele não
+encontre a imagem, ele realizará a **build** da aplicação **(.jar)**, criará a imagem e executará os containers
+automaticamente.
 
 Antes do container da aplicação subir, ele aguardará o container do banco de dados **PostgreSQL** estar pronto
 utilizando um **healthcheck**, quando pronto, o container da aplicação inicia, e realizará a migração do banco de dados
