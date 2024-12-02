@@ -36,13 +36,15 @@ do cliente.
 
 É realizado validação completa e limpeza dos dados de entrada utilizando padrões **RegEx**, impedindo inconsistência de
 dados. Todos os dados da requisição são **obrigatórios** e os campos de **celular**, **CPF** e **CEP**, podem ser
-enviados formatados ou não. Já na camada **core** da aplicação, dentro da classe de domínio **CPF**, é utilizado um
-algoritmo que verifica se o **CPF** é válido/verdadeiro.
+enviados formatados ou não.
 
 Exemplo de formatações aceitas:
 ``
 Celular: 11-111111111 ou 11111111111 | CPF: 111.111.111-11 ou 11111111111 | CEP: 11111-111 ou 11111111
 ``
+
+Já na camada **core** da aplicação, dentro da classe de domínio **CPF**, é utilizado um
+algoritmo que verifica se o **CPF** é válido/verdadeiro.
 
 O usuário deve informa apenas o **CEP** e **número** do seu endereço, as demais informações do endereço serão
 preenchidas automaticamente através da integração com a API **ViaCEP**.
