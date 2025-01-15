@@ -6,7 +6,7 @@ import br.com.fiap.client_management_ms.core.domain.Cpf;
 import java.util.List;
 import java.util.Optional;
 
-public interface ClientAdapter {
+public interface ClientPortOut {
 
     Client createClient(Client client);
 

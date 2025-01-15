@@ -5,23 +5,23 @@ import br.com.fiap.client_management_ms.core.exception.AddressAdapterApiExceptio
 import br.com.fiap.client_management_ms.core.exception.CepAddressNotFoundException;
 import br.com.fiap.client_management_ms.core.exception.ExternalApiException;
 import br.com.fiap.client_management_ms.core.exception.InvalidCepException;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
 
 import static java.util.Objects.nonNull;
 
 public class AddressService {
 
-    private final AddressAdapter addressAdapter;
+    private final AddressPortOut addressPortOut;
 
-    public AddressService(AddressAdapter addressAdapter) {
-        this.addressAdapter = addressAdapter;
+    public AddressService(AddressPortOut addressPortOut) {
+        this.addressPortOut = addressPortOut;
     }
 
     public Address getAddressByApi(Address address) {
         try {
             String cep = address.getCep();
             String number = address.getNumber();
-            Address returnedAddress = addressAdapter.getAddressByApi(cep);
+            Address returnedAddress = addressPortOut.getAddressByApi(cep);
             if (nonNull(number)) {
                 returnedAddress.setNumber(number);
             }

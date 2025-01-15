@@ -4,7 +4,7 @@ import br.com.fiap.client_management_ms.core.domain.Address;
 import br.com.fiap.client_management_ms.core.exception.AddressAdapterApiException;
 import br.com.fiap.client_management_ms.core.exception.CepAddressNotFoundException;
 import br.com.fiap.client_management_ms.core.exception.InvalidCepException;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
 import br.com.fiap.client_management_ms.utils.ClientHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,14 +22,14 @@ class AddressServiceTest {
     AddressService addressService;
 
     @Mock
-    AddressAdapter addressAdapter;
+    AddressPortOut addressPortOut;
 
     AutoCloseable openMocks;
 
     @BeforeEach
     public void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
-        addressService = new AddressService(addressAdapter);
+        addressService = new AddressService(addressPortOut);
     }
 
     @AfterEach
@@ -47,7 +47,7 @@ class AddressServiceTest {
             String cep = address.getCep();
             Address filledAddress = ClientHelper.createFilledAddressObject();
 
-            when(addressAdapter.getAddressByApi(cep)).thenReturn(filledAddress);
+            when(addressPortOut.getAddressByApi(cep)).thenReturn(filledAddress);
 
             // Act
             Address returnedAddress = addressService.getAddressByApi(address);
@@ -70,7 +70,7 @@ class AddressServiceTest {
             assertThat(returnedAddress.getDdd()).isNotNull();
             assertThat(returnedAddress.getSiafi()).isNotNull();
             assertThat(returnedAddress.getClient()).isNull();
-            verify(addressAdapter, times(1)).getAddressByApi(any(String.class));
+            verify(addressPortOut, times(1)).getAddressByApi(any(String.class));
         }
 
         @Test
@@ -80,14 +80,14 @@ class AddressServiceTest {
             Address address = ClientHelper.createAddressObject();
             address.setCep(invalidCep);
 
-            when(addressAdapter.getAddressByApi(any(String.class)))
+            when(addressPortOut.getAddressByApi(any(String.class)))
                     .thenThrow(new AddressAdapterApiException.NotFound(address.getCep()));
 
             // Act & Assert
             assertThatThrownBy(() -> addressService.getAddressByApi(address))
                     .isInstanceOf(CepAddressNotFoundException.class)
                     .hasMessage("CEP not found: " + address.getCep());
-            verify(addressAdapter, times(1)).getAddressByApi(any(String.class));
+            verify(addressPortOut, times(1)).getAddressByApi(any(String.class));
         }
 
         @Test
@@ -97,14 +97,14 @@ class AddressServiceTest {
             Address address = ClientHelper.createAddressObject();
             address.setCep(invalidCep);
 
-            when(addressAdapter.getAddressByApi(any(String.class)))
+            when(addressPortOut.getAddressByApi(any(String.class)))
                     .thenThrow(new AddressAdapterApiException.BadRequest(address.getCep()));
 
             // Act & Assert
             assertThatThrownBy(() -> addressService.getAddressByApi(address))
                     .isInstanceOf(InvalidCepException.class)
                     .hasMessage("CEP format is invalid: " + address.getCep());
-            verify(addressAdapter, times(1)).getAddressByApi(any(String.class));
+            verify(addressPortOut, times(1)).getAddressByApi(any(String.class));
         }
     }
 }

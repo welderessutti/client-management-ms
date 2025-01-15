@@ -3,7 +3,7 @@ package br.com.fiap.client_management_ms.core.service;
 import br.com.fiap.client_management_ms.core.exception.ClientAlreadyExistsException;
 import br.com.fiap.client_management_ms.core.exception.ClientNotFoundException;
 import br.com.fiap.client_management_ms.core.exception.InvalidCpfDocumentNumberException;
-import br.com.fiap.client_management_ms.core.port.in.ClientService;
+import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
 import br.com.fiap.client_management_ms.framework.dto.request.create.ClientCreateRequestDto;
 import br.com.fiap.client_management_ms.framework.dto.request.create.CpfCreateRequestDto;
 import br.com.fiap.client_management_ms.framework.dto.request.update.ClientUpdateRequestDto;
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ClientServiceImplIT {
 
     @Autowired
-    private ClientService clientService;
+    private ClientPortIn clientPortIn;
 
     @Nested
     class CreateClient {
@@ -40,7 +40,7 @@ class ClientServiceImplIT {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
 
             // Act
-            CreateClientResponseDto createdClientResponseDto = clientService.createClient(clientCreateRequestDto);
+            CreateClientResponseDto createdClientResponseDto = clientPortIn.createClient(clientCreateRequestDto);
 
             // Assert
             assertThat(createdClientResponseDto).isNotNull().isInstanceOf(CreateClientResponseDto.class);
@@ -54,7 +54,7 @@ class ClientServiceImplIT {
             clientCreateRequestDto.setCpf(new CpfCreateRequestDto("55426210152"));
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with CPF: " + clientCreateRequestDto.getCpf().getDocumentNumber());
         }
@@ -66,7 +66,7 @@ class ClientServiceImplIT {
             clientCreateRequestDto.setEmail("joao@silva.com.br");
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with e-mail: " + clientCreateRequestDto.getEmail());
         }
@@ -79,7 +79,7 @@ class ClientServiceImplIT {
             clientCreateRequestDto.getCpf().setDocumentNumber(invalidCpf);
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(InvalidCpfDocumentNumberException.class)
                     .hasMessage("Invalid CPF document number: 99999999999");
         }
@@ -94,7 +94,7 @@ class ClientServiceImplIT {
             Long clientId = 1L;
 
             // Act
-            ClientResponseDto foundClientResponseDto = clientService.getClientById(clientId);
+            ClientResponseDto foundClientResponseDto = clientPortIn.getClientById(clientId);
 
             // Assert
             assertThat(foundClientResponseDto).isNotNull().isInstanceOf(ClientResponseDto.class);
@@ -113,7 +113,7 @@ class ClientServiceImplIT {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.getClientById(clientId))
+                    clientPortIn.getClientById(clientId))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + clientId);
         }
@@ -124,7 +124,7 @@ class ClientServiceImplIT {
             String email = "joao@silva.com.br";
 
             // Act
-            ClientResponseDto foundClientResponseDto = clientService.getClientByEmail(email);
+            ClientResponseDto foundClientResponseDto = clientPortIn.getClientByEmail(email);
 
             // Assert
             assertThat(foundClientResponseDto).isNotNull().isInstanceOf(ClientResponseDto.class);
@@ -143,7 +143,7 @@ class ClientServiceImplIT {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.getClientByEmail(email))
+                    clientPortIn.getClientByEmail(email))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with e-mail: " + email);
         }
@@ -151,7 +151,7 @@ class ClientServiceImplIT {
         @Test
         void shouldGetAllClients() {
             // Act
-            AllClientsResponseDto allClientsResponseDto = clientService.getAllClients();
+            AllClientsResponseDto allClientsResponseDto = clientPortIn.getAllClients();
 
             // Assert
             assertThat(allClientsResponseDto).isNotNull().isInstanceOf(AllClientsResponseDto.class);
@@ -176,7 +176,7 @@ class ClientServiceImplIT {
             ClientUpdateRequestDto clientUpdateRequestDto = ClientHelper.createClientUpdateRequestDtoObject();
 
             // Act
-            ClientResponseDto updatedClientResponseDto = clientService.updateClient(clientId, clientUpdateRequestDto);
+            ClientResponseDto updatedClientResponseDto = clientPortIn.updateClient(clientId, clientUpdateRequestDto);
 
             // Assert
             assertThat(updatedClientResponseDto)
@@ -205,7 +205,7 @@ class ClientServiceImplIT {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + id);
         }
@@ -220,7 +220,7 @@ class ClientServiceImplIT {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with CPF: " + existingCpf);
         }
@@ -235,7 +235,7 @@ class ClientServiceImplIT {
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with e-mail: " + existingEmail);
         }
@@ -250,10 +250,10 @@ class ClientServiceImplIT {
             Long clientId = 1L;
 
             // Act
-            clientService.deleteClientById(clientId);
+            clientPortIn.deleteClientById(clientId);
 
             // Assert
-            assertThatThrownBy(() -> clientService.getClientById(clientId))
+            assertThatThrownBy(() -> clientPortIn.getClientById(clientId))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + clientId);
         }
@@ -265,7 +265,7 @@ class ClientServiceImplIT {
 
             // Act
             assertThatThrownBy(() ->
-                    clientService.deleteClientById(clientId))
+                    clientPortIn.deleteClientById(clientId))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + clientId);
         }

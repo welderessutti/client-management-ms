@@ -2,7 +2,7 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.external;
 
 import br.com.fiap.client_management_ms.core.domain.Address;
 import br.com.fiap.client_management_ms.core.exception.AddressAdapterApiException;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
 import br.com.fiap.client_management_ms.core.updater.AddressUpdater;
 import br.com.fiap.client_management_ms.infrastructure.api.ViaCepApiClient;
 import br.com.fiap.client_management_ms.infrastructure.dto.ViaCepApiResponseDto;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 class AddressAdapterImplTest {
 
-    AddressAdapter addressAdapter;
+    AddressPortOut addressPortOut;
 
     @Mock
     ViaCepApiClient viaCepApiClient;
@@ -35,7 +35,7 @@ class AddressAdapterImplTest {
     @BeforeEach
     public void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
-        addressAdapter = new AddressAdapterImpl(viaCepApiClient);
+        addressPortOut = new AddressAdapterImpl(viaCepApiClient);
     }
 
     @AfterEach
@@ -55,7 +55,7 @@ class AddressAdapterImplTest {
             when(viaCepApiClient.getAddressByCep(any(String.class))).thenReturn(viaCepApiResponseDto);
 
             // Act
-            Address returnedAddress = addressAdapter.getAddressByApi(cep);
+            Address returnedAddress = addressPortOut.getAddressByApi(cep);
 
             // Assert
             assertThat(returnedAddress).isNotNull().isInstanceOf(Address.class);
@@ -87,7 +87,7 @@ class AddressAdapterImplTest {
             when(viaCepApiClient.getAddressByCep(any(String.class))).thenReturn(viaCepApiResponseDto);
 
             // Act & Assert
-            assertThatThrownBy(() -> addressAdapter.getAddressByApi(nonExistentCep))
+            assertThatThrownBy(() -> addressPortOut.getAddressByApi(nonExistentCep))
                     .isInstanceOf(AddressAdapterApiException.NotFound.class)
                     .hasMessage(nonExistentCep);
             verify(viaCepApiClient, times(1)).getAddressByCep(any(String.class));
@@ -101,7 +101,7 @@ class AddressAdapterImplTest {
             when(viaCepApiClient.getAddressByCep(any(String.class))).thenThrow(FeignException.BadRequest.class);
 
             // Act & Assert
-            assertThatThrownBy(() -> addressAdapter.getAddressByApi(invalidCep))
+            assertThatThrownBy(() -> addressPortOut.getAddressByApi(invalidCep))
                     .isInstanceOf(AddressAdapterApiException.BadRequest.class)
                     .hasMessage(invalidCep);
             verify(viaCepApiClient, times(1)).getAddressByCep(any(String.class));

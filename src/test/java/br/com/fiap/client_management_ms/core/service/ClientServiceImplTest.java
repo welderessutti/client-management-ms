@@ -6,8 +6,8 @@ import br.com.fiap.client_management_ms.core.domain.Cpf;
 import br.com.fiap.client_management_ms.core.exception.ClientAlreadyExistsException;
 import br.com.fiap.client_management_ms.core.exception.ClientNotFoundException;
 import br.com.fiap.client_management_ms.core.exception.InvalidCpfDocumentNumberException;
-import br.com.fiap.client_management_ms.core.port.in.ClientService;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.framework.dto.request.create.ClientCreateRequestDto;
 import br.com.fiap.client_management_ms.framework.dto.request.update.ClientUpdateRequestDto;
 import br.com.fiap.client_management_ms.framework.dto.response.AllClientsResponseDto;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.*;
 
 class ClientServiceImplTest {
 
-    private ClientService clientService;
+    private ClientPortIn clientPortIn;
 
     @Mock
-    private ClientAdapter clientAdapter;
+    private ClientPortOut clientPortOut;
 
     @Mock
     private AddressService addressService;
@@ -48,7 +48,7 @@ class ClientServiceImplTest {
     @BeforeEach
     public void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
-        clientService = new ClientServiceImpl(addressService, clientAdapter);
+        clientPortIn = new ClientServiceImpl(addressService, clientPortOut);
     }
 
     @AfterEach
@@ -69,21 +69,21 @@ class ClientServiceImplTest {
             address.setId(id);
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
 
-            when(clientAdapter.existsClientByCpf(any(Cpf.class))).thenReturn(false);
-            when(clientAdapter.existsClientByEmail(any(String.class))).thenReturn(false);
+            when(clientPortOut.existsClientByCpf(any(Cpf.class))).thenReturn(false);
+            when(clientPortOut.existsClientByEmail(any(String.class))).thenReturn(false);
             when(addressService.getAddressByApi(any(Address.class))).thenReturn(address);
-            when(clientAdapter.createClient(any(Client.class))).thenReturn(client);
+            when(clientPortOut.createClient(any(Client.class))).thenReturn(client);
 
             // Act
-            CreateClientResponseDto createdClientResponseDto = clientService.createClient(clientCreateRequestDto);
+            CreateClientResponseDto createdClientResponseDto = clientPortIn.createClient(clientCreateRequestDto);
 
             // Assert
             assertThat(createdClientResponseDto).isNotNull().isInstanceOf(CreateClientResponseDto.class);
             assertThat(createdClientResponseDto.getId()).isNotNull();
-            verify(clientAdapter, times(1)).existsClientByCpf(any(Cpf.class));
-            verify(clientAdapter, times(1)).existsClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).existsClientByCpf(any(Cpf.class));
+            verify(clientPortOut, times(1)).existsClientByEmail(any(String.class));
             verify(addressService, times(1)).getAddressByApi(any(Address.class));
-            verify(clientAdapter, times(1)).createClient(any(Client.class));
+            verify(clientPortOut, times(1)).createClient(any(Client.class));
         }
 
         @Test
@@ -92,13 +92,13 @@ class ClientServiceImplTest {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
             Client client = ClientHelper.createClientObject();
 
-            when(clientAdapter.existsClientByCpf(any(Cpf.class))).thenReturn(true);
+            when(clientPortOut.existsClientByCpf(any(Cpf.class))).thenReturn(true);
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with CPF: " + client.getCpf().getDocumentNumber());
-            verify(clientAdapter, times(1)).existsClientByCpf(any(Cpf.class));
+            verify(clientPortOut, times(1)).existsClientByCpf(any(Cpf.class));
         }
 
         @Test
@@ -107,13 +107,13 @@ class ClientServiceImplTest {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
             Client client = ClientHelper.createClientObject();
 
-            when(clientAdapter.existsClientByEmail(any(String.class))).thenReturn(true);
+            when(clientPortOut.existsClientByEmail(any(String.class))).thenReturn(true);
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with e-mail: " + client.getEmail());
-            verify(clientAdapter, times(1)).existsClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).existsClientByEmail(any(String.class));
         }
 
         @Test
@@ -124,7 +124,7 @@ class ClientServiceImplTest {
             clientCreateRequestDto.getCpf().setDocumentNumber(invalidCpf);
 
             // Act & Assert
-            assertThatThrownBy(() -> clientService.createClient(clientCreateRequestDto))
+            assertThatThrownBy(() -> clientPortIn.createClient(clientCreateRequestDto))
                     .isInstanceOf(InvalidCpfDocumentNumberException.class)
                     .hasMessage("Invalid CPF document number: 99999999999");
         }
@@ -140,10 +140,10 @@ class ClientServiceImplTest {
             Client client = ClientHelper.createClientObject();
             client.setId(id);
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.of(client));
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.of(client));
 
             // Act
-            ClientResponseDto foundClientResponseDto = clientService.getClientById(id);
+            ClientResponseDto foundClientResponseDto = clientPortIn.getClientById(id);
 
             // Assert
             assertThat(foundClientResponseDto).isNotNull().isInstanceOf(ClientResponseDto.class);
@@ -153,7 +153,7 @@ class ClientServiceImplTest {
             assertThat(foundClientResponseDto.getMobilePhoneNumber()).isNotNull();
             assertThat(foundClientResponseDto.getCpf()).isNotNull();
             assertThat(foundClientResponseDto.getAddress()).isNotNull();
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
         }
 
         @Test
@@ -161,14 +161,14 @@ class ClientServiceImplTest {
             // Arrange
             Long clientId = 1L;
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.empty());
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.empty());
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.getClientById(clientId))
+                    clientPortIn.getClientById(clientId))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + clientId);
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
         }
 
         @Test
@@ -179,10 +179,10 @@ class ClientServiceImplTest {
             client.setId(id);
             String email = "marcos@silva.com";
 
-            when(clientAdapter.getClientByEmail(any(String.class))).thenReturn(Optional.of(client));
+            when(clientPortOut.getClientByEmail(any(String.class))).thenReturn(Optional.of(client));
 
             // Act
-            ClientResponseDto foundClientResponseDto = clientService.getClientByEmail(email);
+            ClientResponseDto foundClientResponseDto = clientPortIn.getClientByEmail(email);
 
             // Assert
             assertThat(foundClientResponseDto).isNotNull().isInstanceOf(ClientResponseDto.class);
@@ -192,7 +192,7 @@ class ClientServiceImplTest {
             assertThat(foundClientResponseDto.getMobilePhoneNumber()).isNotNull();
             assertThat(foundClientResponseDto.getCpf()).isNotNull();
             assertThat(foundClientResponseDto.getAddress()).isNotNull();
-            verify(clientAdapter, times(1)).getClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).getClientByEmail(any(String.class));
         }
 
         @Test
@@ -200,14 +200,14 @@ class ClientServiceImplTest {
             // Arrange
             String email = "not@exists.com";
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.empty());
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.empty());
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.getClientByEmail(email))
+                    clientPortIn.getClientByEmail(email))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with e-mail: " + email);
-            verify(clientAdapter, times(1)).getClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).getClientByEmail(any(String.class));
         }
 
         @Test
@@ -217,10 +217,10 @@ class ClientServiceImplTest {
             Client client2 = ClientHelper.createClientObject();
             List<Client> clientList = Arrays.asList(client1, client2);
 
-            when(clientAdapter.getAllClients()).thenReturn(clientList);
+            when(clientPortOut.getAllClients()).thenReturn(clientList);
 
             // Act
-            AllClientsResponseDto allClientsResponseDto = clientService.getAllClients();
+            AllClientsResponseDto allClientsResponseDto = clientPortIn.getAllClients();
 
             // Assert
             assertThat(allClientsResponseDto).isNotNull().isInstanceOf(AllClientsResponseDto.class);
@@ -232,7 +232,7 @@ class ClientServiceImplTest {
                                 .isNotNull()
                                 .isInstanceOf(ClientResponseDto.class);
                     });
-            verify(clientAdapter, times(1)).getAllClients();
+            verify(clientPortOut, times(1)).getAllClients();
         }
     }
 
@@ -252,14 +252,14 @@ class ClientServiceImplTest {
             updatedClient.setId(id);
             updatedClient.getAddress().setId(id);
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.of(client));
-            when(clientAdapter.existsClientByCpf(any(Cpf.class))).thenReturn(false);
-            when(clientAdapter.existsClientByEmail(any(String.class))).thenReturn(false);
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.of(client));
+            when(clientPortOut.existsClientByCpf(any(Cpf.class))).thenReturn(false);
+            when(clientPortOut.existsClientByEmail(any(String.class))).thenReturn(false);
             when(addressService.getAddressByApi(any(Address.class))).thenReturn(updatedAddress);
-            when(clientAdapter.updateClient(any(Client.class))).thenReturn(updatedClient);
+            when(clientPortOut.updateClient(any(Client.class))).thenReturn(updatedClient);
 
             // Act
-            ClientResponseDto updatedClientResponseDto = clientService.updateClient(id, clientUpdateRequestDto);
+            ClientResponseDto updatedClientResponseDto = clientPortIn.updateClient(id, clientUpdateRequestDto);
 
             // Assert
             assertThat(updatedClientResponseDto).isNotNull().isInstanceOf(ClientResponseDto.class);
@@ -269,11 +269,11 @@ class ClientServiceImplTest {
             assertThat(updatedClientResponseDto.getMobilePhoneNumber()).isNotNull().isEqualTo(clientUpdateRequestDto.getMobilePhoneNumber());
             assertThat(updatedClientResponseDto.getCpf().getDocumentNumber()).isNotNull().isEqualTo(clientUpdateRequestDto.getCpf().getDocumentNumber());
             assertThat(updatedClientResponseDto.getAddress().getId()).isNotNull().isEqualTo(id);
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
-            verify(clientAdapter, times(1)).existsClientByCpf(any(Cpf.class));
-            verify(clientAdapter, times(1)).existsClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).existsClientByCpf(any(Cpf.class));
+            verify(clientPortOut, times(1)).existsClientByEmail(any(String.class));
             verify(addressService, times(1)).getAddressByApi(any(Address.class));
-            verify(clientAdapter, times(1)).updateClient(any(Client.class));
+            verify(clientPortOut, times(1)).updateClient(any(Client.class));
         }
 
         @Test
@@ -282,14 +282,14 @@ class ClientServiceImplTest {
             Long id = 999L;
             ClientUpdateRequestDto clientUpdateRequestDto = ClientHelper.createClientUpdateRequestDtoObject();
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.empty());
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.empty());
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + id);
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
         }
 
         @Test
@@ -303,16 +303,16 @@ class ClientServiceImplTest {
             client.setId(id);
             client.getAddress().setId(id);
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.of(client));
-            when(clientAdapter.existsClientByCpf(any(Cpf.class))).thenReturn(true);
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.of(client));
+            when(clientPortOut.existsClientByCpf(any(Cpf.class))).thenReturn(true);
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with CPF: " + existingCpf);
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
-            verify(clientAdapter, times(1)).existsClientByCpf(any(Cpf.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).existsClientByCpf(any(Cpf.class));
         }
 
         @Test
@@ -326,18 +326,18 @@ class ClientServiceImplTest {
             client.setId(id);
             client.getAddress().setId(id);
 
-            when(clientAdapter.getClientById(any(Long.class))).thenReturn(Optional.of(client));
-            when(clientAdapter.existsClientByCpf(any(Cpf.class))).thenReturn(false);
-            when(clientAdapter.existsClientByEmail(any(String.class))).thenReturn(true);
+            when(clientPortOut.getClientById(any(Long.class))).thenReturn(Optional.of(client));
+            when(clientPortOut.existsClientByCpf(any(Cpf.class))).thenReturn(false);
+            when(clientPortOut.existsClientByEmail(any(String.class))).thenReturn(true);
 
             // Act & Assert
             assertThatThrownBy(() ->
-                    clientService.updateClient(id, clientUpdateRequestDto))
+                    clientPortIn.updateClient(id, clientUpdateRequestDto))
                     .isInstanceOf(ClientAlreadyExistsException.class)
                     .hasMessage("Client already exists with e-mail: " + existingEmail);
-            verify(clientAdapter, times(1)).getClientById(any(Long.class));
-            verify(clientAdapter, times(1)).existsClientByCpf(any(Cpf.class));
-            verify(clientAdapter, times(1)).existsClientByEmail(any(String.class));
+            verify(clientPortOut, times(1)).getClientById(any(Long.class));
+            verify(clientPortOut, times(1)).existsClientByCpf(any(Cpf.class));
+            verify(clientPortOut, times(1)).existsClientByEmail(any(String.class));
         }
     }
 
@@ -349,15 +349,15 @@ class ClientServiceImplTest {
             // Arrange
             Long id = 1L;
 
-            when(clientAdapter.existsClientById(any(Long.class))).thenReturn(true);
-            doNothing().when(clientAdapter).deleteClientById(any(Long.class));
+            when(clientPortOut.existsClientById(any(Long.class))).thenReturn(true);
+            doNothing().when(clientPortOut).deleteClientById(any(Long.class));
 
             // Act
-            clientService.deleteClientById(id);
+            clientPortIn.deleteClientById(id);
 
             // Assert
-            verify(clientAdapter, times(1)).existsClientById(any(Long.class));
-            verify(clientAdapter, times(1)).deleteClientById(any(Long.class));
+            verify(clientPortOut, times(1)).existsClientById(any(Long.class));
+            verify(clientPortOut, times(1)).deleteClientById(any(Long.class));
         }
 
         @Test
@@ -365,14 +365,14 @@ class ClientServiceImplTest {
             // Arrange
             Long clientId = 999L;
 
-            when(clientAdapter.existsClientById(any(Long.class))).thenReturn(false);
+            when(clientPortOut.existsClientById(any(Long.class))).thenReturn(false);
 
             // Act
             assertThatThrownBy(() ->
-                    clientService.deleteClientById(clientId))
+                    clientPortIn.deleteClientById(clientId))
                     .isInstanceOf(ClientNotFoundException.class)
                     .hasMessage("Client not found with id: " + clientId);
-            verify(clientAdapter, times(1)).existsClientById(any(Long.class));
+            verify(clientPortOut, times(1)).existsClientById(any(Long.class));
         }
     }
 }

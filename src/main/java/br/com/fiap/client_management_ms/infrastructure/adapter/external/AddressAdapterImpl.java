@@ -2,13 +2,13 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.external;
 
 import br.com.fiap.client_management_ms.core.domain.Address;
 import br.com.fiap.client_management_ms.core.exception.AddressAdapterApiException;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
 import br.com.fiap.client_management_ms.infrastructure.api.ViaCepApiClient;
 import br.com.fiap.client_management_ms.infrastructure.dto.ViaCepApiResponseDto;
 import br.com.fiap.client_management_ms.infrastructure.mapper.AddressDomainDtoMapper;
 import feign.FeignException;
 
-public class AddressAdapterImpl implements AddressAdapter {
+public class AddressAdapterImpl implements AddressPortOut {
 
     private final ViaCepApiClient viaCepApiClient;
 

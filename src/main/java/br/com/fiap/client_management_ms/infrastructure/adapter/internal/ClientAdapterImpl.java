@@ -2,7 +2,7 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.internal;
 
 import br.com.fiap.client_management_ms.core.domain.Client;
 import br.com.fiap.client_management_ms.core.domain.Cpf;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.infrastructure.entity.ClientEntity;
 import br.com.fiap.client_management_ms.infrastructure.entity.CpfEntity;
 import br.com.fiap.client_management_ms.infrastructure.mapper.ClientDomainEntityMapper;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public class ClientAdapterImpl implements ClientAdapter {
+public class ClientAdapterImpl implements ClientPortOut {
 
     private final ClientRepository clientRepository;
 

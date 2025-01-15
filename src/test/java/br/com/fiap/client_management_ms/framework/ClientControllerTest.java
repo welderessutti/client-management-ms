@@ -4,7 +4,7 @@ import br.com.fiap.client_management_ms.core.exception.CepAddressNotFoundExcepti
 import br.com.fiap.client_management_ms.core.exception.ClientAlreadyExistsException;
 import br.com.fiap.client_management_ms.core.exception.ClientNotFoundException;
 import br.com.fiap.client_management_ms.core.exception.InvalidCpfDocumentNumberException;
-import br.com.fiap.client_management_ms.core.port.in.ClientService;
+import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
 import br.com.fiap.client_management_ms.framework.advice.ApplicationExceptionHandler;
 import br.com.fiap.client_management_ms.framework.controller.ClientController;
 import br.com.fiap.client_management_ms.framework.dto.request.create.ClientCreateRequestDto;
@@ -41,12 +41,12 @@ class ClientControllerTest {
     ApplicationExceptionHandler applicationExceptionHandler;
 
     @Mock
-    ClientService clientService;
+    ClientPortIn clientPortIn;
 
     @BeforeEach
     void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
-        clientController = new ClientController(clientService);
+        clientController = new ClientController(clientPortIn);
         applicationExceptionHandler = new ApplicationExceptionHandler();
         mockMvc = MockMvcBuilders.standaloneSetup(clientController)
                 .setControllerAdvice(applicationExceptionHandler)
@@ -67,7 +67,7 @@ class ClientControllerTest {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
             CreateClientResponseDto createClientResponseDto = ClientHelper.createCreateClientResponseDtoObject();
 
-            when(clientService.createClient(any(ClientCreateRequestDto.class))).thenReturn(createClientResponseDto);
+            when(clientPortIn.createClient(any(ClientCreateRequestDto.class))).thenReturn(createClientResponseDto);
 
             // Act & Assert
             mockMvc.perform(post("/client")
@@ -75,7 +75,7 @@ class ClientControllerTest {
                             .content(asJsonString(clientCreateRequestDto)))
                     .andExpect(status().isCreated())
                     .andExpect(content().json(asJsonString(createClientResponseDto)));
-            verify(clientService, times(1)).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, times(1)).createClient(any(ClientCreateRequestDto.class));
         }
 
         @Test
@@ -83,7 +83,7 @@ class ClientControllerTest {
             // Arrange
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
 
-            when(clientService.createClient(any(ClientCreateRequestDto.class)))
+            when(clientPortIn.createClient(any(ClientCreateRequestDto.class)))
                     .thenThrow(new ClientAlreadyExistsException(
                             "Client already exists with CPF: " + clientCreateRequestDto.getCpf().getDocumentNumber()));
 
@@ -103,7 +103,7 @@ class ClientControllerTest {
                                     + clientCreateRequestDto.getCpf().getDocumentNumber()))
                     .andExpect(jsonPath("$.path")
                             .value("/client"));
-            verify(clientService, times(1)).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, times(1)).createClient(any(ClientCreateRequestDto.class));
         }
 
         @Test
@@ -111,7 +111,7 @@ class ClientControllerTest {
             // Arrange
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
 
-            when(clientService.createClient(any(ClientCreateRequestDto.class)))
+            when(clientPortIn.createClient(any(ClientCreateRequestDto.class)))
                     .thenThrow(new ClientAlreadyExistsException(
                             "Client already exists with e-mail: " + clientCreateRequestDto.getEmail()));
 
@@ -131,7 +131,7 @@ class ClientControllerTest {
                                     + clientCreateRequestDto.getEmail()))
                     .andExpect(jsonPath("$.path")
                             .value("/client"));
-            verify(clientService, times(1)).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, times(1)).createClient(any(ClientCreateRequestDto.class));
         }
 
         @Test
@@ -140,7 +140,7 @@ class ClientControllerTest {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
             clientCreateRequestDto.getCpf().setDocumentNumber("999.999.999-99");
 
-            when(clientService.createClient(any(ClientCreateRequestDto.class)))
+            when(clientPortIn.createClient(any(ClientCreateRequestDto.class)))
                     .thenThrow(new InvalidCpfDocumentNumberException(
                             "Invalid CPF document number: 99999999999"));
 
@@ -159,7 +159,7 @@ class ClientControllerTest {
                             .value("Invalid CPF document number: 99999999999"))
                     .andExpect(jsonPath("$.path")
                             .value("/client"));
-            verify(clientService, times(1)).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, times(1)).createClient(any(ClientCreateRequestDto.class));
         }
 
         @Test
@@ -168,7 +168,7 @@ class ClientControllerTest {
             ClientCreateRequestDto clientCreateRequestDto = ClientHelper.createClientRequestDtoObject();
             clientCreateRequestDto.getAddress().setCep("99999-999");
 
-            when(clientService.createClient(any(ClientCreateRequestDto.class)))
+            when(clientPortIn.createClient(any(ClientCreateRequestDto.class)))
                     .thenThrow(new CepAddressNotFoundException(
                             "CEP not found: 99999999"));
 
@@ -187,7 +187,7 @@ class ClientControllerTest {
                             .value("CEP not found: 99999999"))
                     .andExpect(jsonPath("$.path")
                             .value("/client"));
-            verify(clientService, times(1)).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, times(1)).createClient(any(ClientCreateRequestDto.class));
         }
 
         @Test
@@ -201,7 +201,7 @@ class ClientControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(clientCreateRequestDto)))
                     .andExpect(status().isBadRequest());
-            verify(clientService, never()).createClient(any(ClientCreateRequestDto.class));
+            verify(clientPortIn, never()).createClient(any(ClientCreateRequestDto.class));
         }
     }
 
@@ -214,13 +214,13 @@ class ClientControllerTest {
             Long clientId = 1L;
             ClientResponseDto clientResponseDto = ClientHelper.createClientResponseDtoObject();
 
-            when(clientService.getClientById(any(Long.class))).thenReturn(clientResponseDto);
+            when(clientPortIn.getClientById(any(Long.class))).thenReturn(clientResponseDto);
 
             // Act & Assert
             mockMvc.perform(get("/client/{clientId}", clientId))
                     .andExpect(status().isOk())
                     .andExpect(content().json(asJsonString(clientResponseDto)));
-            verify(clientService, times(1)).getClientById(any(Long.class));
+            verify(clientPortIn, times(1)).getClientById(any(Long.class));
         }
 
         @Test
@@ -228,7 +228,7 @@ class ClientControllerTest {
             // Arrange
             Long clientId = 1L;
 
-            when(clientService.getClientById(any(Long.class)))
+            when(clientPortIn.getClientById(any(Long.class)))
                     .thenThrow(new ClientNotFoundException("Client not found with id: " + clientId));
 
             // Act & Assert
@@ -245,7 +245,7 @@ class ClientControllerTest {
                                     + clientId))
                     .andExpect(jsonPath("$.path")
                             .value("/client/" + clientId));
-            verify(clientService, times(1)).getClientById(any(Long.class));
+            verify(clientPortIn, times(1)).getClientById(any(Long.class));
         }
 
         @Test
@@ -254,13 +254,13 @@ class ClientControllerTest {
             String email = "marcos@silva.com";
             ClientResponseDto clientResponseDto = ClientHelper.createClientResponseDtoObject();
 
-            when(clientService.getClientByEmail(any(String.class))).thenReturn(clientResponseDto);
+            when(clientPortIn.getClientByEmail(any(String.class))).thenReturn(clientResponseDto);
 
             // Act & Assert
             mockMvc.perform(get("/client?email={email}", email))
                     .andExpect(status().isOk())
                     .andExpect(content().json(asJsonString(clientResponseDto)));
-            verify(clientService, times(1)).getClientByEmail(any(String.class));
+            verify(clientPortIn, times(1)).getClientByEmail(any(String.class));
         }
 
         @Test
@@ -268,7 +268,7 @@ class ClientControllerTest {
             // Arrange
             String email = "not@exists.com";
 
-            when(clientService.getClientByEmail(any(String.class)))
+            when(clientPortIn.getClientByEmail(any(String.class)))
                     .thenThrow(new ClientNotFoundException("Client not found with e-mail: " + email));
 
             // Act & Assert
@@ -285,7 +285,7 @@ class ClientControllerTest {
                                     + email))
                     .andExpect(jsonPath("$.path")
                             .value("/client"));
-            verify(clientService, times(1)).getClientByEmail(any(String.class));
+            verify(clientPortIn, times(1)).getClientByEmail(any(String.class));
         }
 
         @Test
@@ -293,13 +293,13 @@ class ClientControllerTest {
             // Arrange
             AllClientsResponseDto allClientsResponseDto = ClientHelper.createAllClientsResponseDtoObject();
 
-            when(clientService.getAllClients()).thenReturn(allClientsResponseDto);
+            when(clientPortIn.getAllClients()).thenReturn(allClientsResponseDto);
 
             // Act & Assert
             mockMvc.perform(get("/client/all"))
                     .andExpect(status().isOk())
                     .andExpect(content().json(asJsonString(allClientsResponseDto)));
-            verify(clientService, times(1)).getAllClients();
+            verify(clientPortIn, times(1)).getAllClients();
         }
     }
 
@@ -314,7 +314,7 @@ class ClientControllerTest {
             ClientResponseDto clientResponseDto = ClientHelper.createClientResponseDtoObject();
             clientResponseDto.setFullName(clientUpdateRequestDto.getFullName());
 
-            when(clientService.updateClient(any(Long.class), any(ClientUpdateRequestDto.class)))
+            when(clientPortIn.updateClient(any(Long.class), any(ClientUpdateRequestDto.class)))
                     .thenReturn(clientResponseDto);
 
             // Act & Assert
@@ -323,7 +323,7 @@ class ClientControllerTest {
                             .content(asJsonString(clientUpdateRequestDto)))
                     .andExpect(status().isOk())
                     .andExpect(content().json(asJsonString(clientResponseDto)));
-            verify(clientService, times(1))
+            verify(clientPortIn, times(1))
                     .updateClient(any(Long.class), any(ClientUpdateRequestDto.class));
         }
     }
@@ -336,12 +336,12 @@ class ClientControllerTest {
             // Arrange
             Long clientId = 1L;
 
-            doNothing().when(clientService).deleteClientById(any(Long.class));
+            doNothing().when(clientPortIn).deleteClientById(any(Long.class));
 
             // Act & Assert
             mockMvc.perform(delete("/client/{clientId}", clientId))
                     .andExpect(status().isNoContent());
-            verify(clientService, times(1)).deleteClientById(any(Long.class));
+            verify(clientPortIn, times(1)).deleteClientById(any(Long.class));
         }
 
         @Test
@@ -350,7 +350,7 @@ class ClientControllerTest {
             Long clientId = 1L;
 
             doThrow(new ClientNotFoundException("Client not found with id: " + clientId))
-                    .when(clientService).deleteClientById(any(Long.class));
+                    .when(clientPortIn).deleteClientById(any(Long.class));
 
             // Act & Assert
             mockMvc.perform(delete("/client/{clientId}", clientId))
@@ -366,7 +366,7 @@ class ClientControllerTest {
                                     + clientId))
                     .andExpect(jsonPath("$.path")
                             .value("/client/" + clientId));
-            verify(clientService, times(1)).deleteClientById(any(Long.class));
+            verify(clientPortIn, times(1)).deleteClientById(any(Long.class));
         }
 
     }

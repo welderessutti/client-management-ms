@@ -6,7 +6,7 @@ import br.com.fiap.client_management_ms.framework.dto.response.AllClientsRespons
 import br.com.fiap.client_management_ms.framework.dto.response.ClientResponseDto;
 import br.com.fiap.client_management_ms.framework.dto.response.CreateClientResponseDto;
 
-public interface ClientService {
+public interface ClientPortIn {
 
     CreateClientResponseDto createClient(ClientCreateRequestDto request);
 

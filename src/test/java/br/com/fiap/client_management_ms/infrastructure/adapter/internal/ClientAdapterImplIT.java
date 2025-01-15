@@ -2,7 +2,7 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.internal;
 
 import br.com.fiap.client_management_ms.core.domain.Client;
 import br.com.fiap.client_management_ms.core.domain.Cpf;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.utils.ClientHelper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ClientAdapterImplIT {
 
     @Autowired
-    private ClientAdapter clientAdapter;
+    private ClientPortOut clientPortOut;
 
     @Nested
     class CreateClient {
@@ -36,7 +36,7 @@ class ClientAdapterImplIT {
             expectedClient.setId(client.getId());
 
             // Act
-            Client clientSaved = clientAdapter.createClient(client);
+            Client clientSaved = clientPortOut.createClient(client);
 
             // Assert
             assertThat(clientSaved)
@@ -61,7 +61,7 @@ class ClientAdapterImplIT {
             Long id = 1L;
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientById(id);
+            Optional<Client> clientReturned = clientPortOut.getClientById(id);
 
             // Assert
             assertThat(clientReturned).isPresent().isNotNull().isInstanceOf(Optional.class);
@@ -82,7 +82,7 @@ class ClientAdapterImplIT {
             Long id = 10L;
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientById(id);
+            Optional<Client> clientReturned = clientPortOut.getClientById(id);
 
             // Assert
             assertThat(clientReturned).isEmpty().isNotNull().isInstanceOf(Optional.class);
@@ -94,7 +94,7 @@ class ClientAdapterImplIT {
             String email = "joao@silva.com.br";
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientByEmail(email);
+            Optional<Client> clientReturned = clientPortOut.getClientByEmail(email);
 
             // Assert
             assertThat(clientReturned).isPresent().isNotNull().isInstanceOf(Optional.class);
@@ -115,7 +115,7 @@ class ClientAdapterImplIT {
             String email = "not@exists.com";
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientByEmail(email);
+            Optional<Client> clientReturned = clientPortOut.getClientByEmail(email);
 
             // Assert
             assertThat(clientReturned).isEmpty().isNotNull().isInstanceOf(Optional.class);
@@ -124,7 +124,7 @@ class ClientAdapterImplIT {
         @Test
         void shouldGetAllClients() {
             // Act
-            List<Client> clientList = clientAdapter.getAllClients();
+            List<Client> clientList = clientPortOut.getAllClients();
 
             // Assert
             assertThat(clientList)
@@ -152,7 +152,7 @@ class ClientAdapterImplIT {
             client.getAddress().setClient(client);
 
             // Act
-            Client updatedClient = clientAdapter.updateClient(client);
+            Client updatedClient = clientPortOut.updateClient(client);
 
             // Assert
             assertThat(updatedClient).isNotNull().isInstanceOf(Client.class);
@@ -174,10 +174,10 @@ class ClientAdapterImplIT {
             Long id = 1L;
 
             // Act
-            clientAdapter.deleteClientById(id);
+            clientPortOut.deleteClientById(id);
 
             // Assert
-            assertThat(clientAdapter.existsClientById(id)).isFalse();
+            assertThat(clientPortOut.existsClientById(id)).isFalse();
         }
     }
 
@@ -190,7 +190,7 @@ class ClientAdapterImplIT {
             Long id = 1L;
 
             // Act
-            boolean clientExists = clientAdapter.existsClientById(id);
+            boolean clientExists = clientPortOut.existsClientById(id);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -202,7 +202,7 @@ class ClientAdapterImplIT {
             Long id = 999L;
 
             // Act
-            boolean clientExists = clientAdapter.existsClientById(id);
+            boolean clientExists = clientPortOut.existsClientById(id);
 
             // Assert
             assertThat(clientExists).isFalse();
@@ -214,7 +214,7 @@ class ClientAdapterImplIT {
             String email = "joao@silva.com.br";
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByEmail(email);
+            boolean clientExists = clientPortOut.existsClientByEmail(email);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -226,7 +226,7 @@ class ClientAdapterImplIT {
             String email = "not@exists.com";
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByEmail(email);
+            boolean clientExists = clientPortOut.existsClientByEmail(email);
 
             // Assert
             assertThat(clientExists).isFalse();
@@ -238,7 +238,7 @@ class ClientAdapterImplIT {
             Cpf cpf = new Cpf("55426210152");
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByCpf(cpf);
+            boolean clientExists = clientPortOut.existsClientByCpf(cpf);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -250,7 +250,7 @@ class ClientAdapterImplIT {
             Cpf cpf = new Cpf("13184731014");
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByCpf(cpf);
+            boolean clientExists = clientPortOut.existsClientByCpf(cpf);
 
             // Assert
             assertThat(clientExists).isFalse();

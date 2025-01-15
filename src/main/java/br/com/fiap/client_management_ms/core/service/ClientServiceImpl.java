@@ -5,8 +5,8 @@ import br.com.fiap.client_management_ms.core.domain.Client;
 import br.com.fiap.client_management_ms.core.exception.ClientAlreadyExistsException;
 import br.com.fiap.client_management_ms.core.exception.ClientNotFoundException;
 import br.com.fiap.client_management_ms.core.mapper.ClientDtoDomainMapper;
-import br.com.fiap.client_management_ms.core.port.in.ClientService;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.core.updater.ClientUpdater;
 import br.com.fiap.client_management_ms.framework.dto.request.create.ClientCreateRequestDto;
 import br.com.fiap.client_management_ms.framework.dto.request.update.ClientUpdateRequestDto;
@@ -18,39 +18,32 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
-public class ClientServiceImpl implements ClientService {
+public class ClientServiceImpl implements ClientPortIn {
 
     private final AddressService addressService;
-    private final ClientAdapter clientAdapter;
+    private final ClientPortOut clientPortOut;
     private static final String EXISTS_WITH_CPF = "Client already exists with CPF: ";
     private static final String EXISTS_WITH_EMAIL = "Client already exists with e-mail: ";
     private static final String NOT_FOUND_WITH_ID = "Client not found with id: ";
     private static final String NOT_FOUND_WITH_EMAIL = "Client not found with e-mail: ";
 
-    public ClientServiceImpl(AddressService addressService, ClientAdapter clientAdapter) {
+    public ClientServiceImpl(AddressService addressService, ClientPortOut clientPortOut) {
         this.addressService = addressService;
-        this.clientAdapter = clientAdapter;
+        this.clientPortOut = clientPortOut;
     }
 
     @Override
     public CreateClientResponseDto createClient(ClientCreateRequestDto request) {
         Client client = ClientDtoDomainMapper.toClient(request);
-        if (clientAdapter.existsClientByCpf(client.getCpf())) {
-            throw new ClientAlreadyExistsException(
-                    EXISTS_WITH_CPF + client.getCpf().getDocumentNumber());
-        }
-        if (clientAdapter.existsClientByEmail(client.getEmail())) {
-            throw new ClientAlreadyExistsException(
-                    EXISTS_WITH_EMAIL + client.getEmail());
-        }
-        Address returnedAddress = addressService.getAddressByApi(client.getAddress());
+        validateClientExistence(client);
+        Address returnedAddress = getAddressData(client);
         client.setAddress(returnedAddress);
-        return ClientDtoDomainMapper.toCreateClientResponseDto(clientAdapter.createClient(client));
+        return ClientDtoDomainMapper.toCreateClientResponseDto(clientPortOut.createClient(client));
     }
 
     @Override
     public ClientResponseDto getClientById(Long clientId) {
-        Optional<Client> optionalClient = clientAdapter.getClientById(clientId);
+        Optional<Client> optionalClient = clientPortOut.getClientById(clientId);
         if (optionalClient.isEmpty()) {
             throw new ClientNotFoundException(NOT_FOUND_WITH_ID + clientId);
         }
@@ -59,7 +52,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientResponseDto getClientByEmail(String email) {
-        Optional<Client> optionalClient = clientAdapter.getClientByEmail(email);
+        Optional<Client> optionalClient = clientPortOut.getClientByEmail(email);
         if (optionalClient.isEmpty()) {
             throw new ClientNotFoundException(NOT_FOUND_WITH_EMAIL + email);
         }
@@ -68,40 +61,60 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public AllClientsResponseDto getAllClients() {
-        return ClientDtoDomainMapper.allClientsResponseDto(clientAdapter.getAllClients());
+        return ClientDtoDomainMapper.allClientsResponseDto(clientPortOut.getAllClients());
     }
 
     @Override
     public ClientResponseDto updateClient(Long clientId, ClientUpdateRequestDto request) {
-        Optional<Client> optionalClient = clientAdapter.getClientById(clientId);
-        if (optionalClient.isEmpty()) {
-            throw new ClientNotFoundException(NOT_FOUND_WITH_ID + clientId);
-        }
-
-        Client outdatedClient = optionalClient.get();
+        Client outdatedClient = findClientById(clientId);
         Client updatedClient = ClientDtoDomainMapper.updateRequestToClient(request);
-
-        if (nonNull(updatedClient.getCpf()) && clientAdapter.existsClientByCpf(updatedClient.getCpf())) {
-            throw new ClientAlreadyExistsException(
-                    EXISTS_WITH_CPF + updatedClient.getCpf().getDocumentNumber());
-        }
-        if (nonNull(updatedClient.getEmail()) && clientAdapter.existsClientByEmail(updatedClient.getEmail())) {
-            throw new ClientAlreadyExistsException(
-                    EXISTS_WITH_EMAIL + updatedClient.getEmail());
-        }
-        if (nonNull(updatedClient.getAddress()) && nonNull(updatedClient.getAddress().getCep())) {
-            Address returnedAddress = addressService.getAddressByApi(updatedClient.getAddress());
-            updatedClient.setAddress(returnedAddress);
-        }
-        ClientUpdater.updateOutdatedClient(outdatedClient, updatedClient);
-        return ClientDtoDomainMapper.toClientResponseDto(clientAdapter.updateClient(outdatedClient));
+        updateClientInformation(outdatedClient, updatedClient);
+        return ClientDtoDomainMapper.toClientResponseDto(clientPortOut.updateClient(outdatedClient));
     }
 
     @Override
     public void deleteClientById(Long clientId) {
-        if (!clientAdapter.existsClientById(clientId)) {
+        if (!clientPortOut.existsClientById(clientId)) {
             throw new ClientNotFoundException(NOT_FOUND_WITH_ID + clientId);
         }
-        clientAdapter.deleteClientById(clientId);
+        clientPortOut.deleteClientById(clientId);
+    }
+
+    private void validateClientExistence(Client client) {
+        if (clientPortOut.existsClientByCpf(client.getCpf())) {
+            throw new ClientAlreadyExistsException(EXISTS_WITH_CPF + client.getCpf().getDocumentNumber());
+        }
+        if (clientPortOut.existsClientByEmail(client.getEmail())) {
+            throw new ClientAlreadyExistsException(EXISTS_WITH_EMAIL + client.getEmail());
+        }
+    }
+
+    private Address getAddressData(Client client) {
+        return addressService.getAddressByApi(client.getAddress());
+    }
+
+    private Client findClientById(Long clientId) {
+        return clientPortOut.getClientById(clientId)
+                .orElseThrow(() -> new ClientNotFoundException(NOT_FOUND_WITH_ID + clientId));
+    }
+
+    private void updateClientInformation(Client outdatedClient, Client updatedClient) {
+        validateClientUniqueness(updatedClient);
+        if (nonNull(updatedClient.getAddress()) && nonNull(updatedClient.getAddress().getCep())) {
+            Address returnedAddress = getAddressData(updatedClient);
+            updatedClient.setAddress(returnedAddress);
+        }
+        ClientUpdater.updateOutdatedClient(outdatedClient, updatedClient);
+    }
+
+    private void validateClientUniqueness(Client updatedClient) {
+        if (nonNull(updatedClient.getCpf()) && clientPortOut.existsClientByCpf(updatedClient.getCpf())) {
+            throw new ClientAlreadyExistsException(
+                    EXISTS_WITH_CPF + updatedClient.getCpf().getDocumentNumber());
+        }
+        if (nonNull(updatedClient.getEmail()) && clientPortOut.existsClientByEmail(updatedClient.getEmail())) {
+            throw new ClientAlreadyExistsException(
+                    EXISTS_WITH_EMAIL + updatedClient.getEmail());
+        }
     }
 }

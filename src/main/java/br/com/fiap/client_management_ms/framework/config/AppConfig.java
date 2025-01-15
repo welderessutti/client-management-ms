@@ -1,8 +1,8 @@
 package br.com.fiap.client_management_ms.framework.config;
 
-import br.com.fiap.client_management_ms.core.port.in.ClientService;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.core.service.AddressService;
 import br.com.fiap.client_management_ms.core.service.ClientServiceImpl;
 import br.com.fiap.client_management_ms.infrastructure.adapter.external.AddressAdapterImpl;
@@ -16,22 +16,22 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public ClientAdapter clientAdapter(ClientRepository clientRepository) {
+    public ClientPortOut clientAdapter(ClientRepository clientRepository) {
         return new ClientAdapterImpl(clientRepository);
     }
 
     @Bean
-    public ClientService clientService(AddressService addressService, ClientAdapter clientAdapter) {
-        return new ClientServiceImpl(addressService, clientAdapter);
+    public ClientPortIn clientService(AddressService addressService, ClientPortOut clientPortOut) {
+        return new ClientServiceImpl(addressService, clientPortOut);
     }
 
     @Bean
-    public AddressAdapter addressAdapter(ViaCepApiClient viaCepApiClient) {
+    public AddressPortOut addressAdapter(ViaCepApiClient viaCepApiClient) {
         return new AddressAdapterImpl(viaCepApiClient);
     }
 
     @Bean
-    public AddressService addressService(AddressAdapter addressAdapter) {
-        return new AddressService(addressAdapter);
+    public AddressService addressService(AddressPortOut addressPortOut) {
+        return new AddressService(addressPortOut);
     }
 }

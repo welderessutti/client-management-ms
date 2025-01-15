@@ -3,7 +3,7 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.internal;
 import br.com.fiap.client_management_ms.core.domain.Address;
 import br.com.fiap.client_management_ms.core.domain.Client;
 import br.com.fiap.client_management_ms.core.domain.Cpf;
-import br.com.fiap.client_management_ms.core.port.out.ClientAdapter;
+import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.infrastructure.entity.ClientEntity;
 import br.com.fiap.client_management_ms.infrastructure.entity.CpfEntity;
 import br.com.fiap.client_management_ms.infrastructure.repository.ClientRepository;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 class ClientAdapterImplTest {
 
-    private ClientAdapter clientAdapter;
+    private ClientPortOut clientPortOut;
 
     @Mock
     private ClientRepository clientRepository;
@@ -35,7 +35,7 @@ class ClientAdapterImplTest {
     @BeforeEach
     void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
-        clientAdapter = new ClientAdapterImpl(clientRepository);
+        clientPortOut = new ClientAdapterImpl(clientRepository);
     }
 
     @AfterEach
@@ -60,7 +60,7 @@ class ClientAdapterImplTest {
             when(clientRepository.save(any(ClientEntity.class))).thenReturn(clientEntity);
 
             // Act
-            Client clientSaved = clientAdapter.createClient(client);
+            Client clientSaved = clientPortOut.createClient(client);
 
             // Assert
             assertThat(clientSaved)
@@ -96,7 +96,7 @@ class ClientAdapterImplTest {
             when(clientRepository.findById(any(Long.class))).thenReturn(Optional.of(clientEntity));
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientById(id);
+            Optional<Client> clientReturned = clientPortOut.getClientById(id);
 
             // Assert
             assertThat(clientReturned).isPresent().isNotNull().isInstanceOf(Optional.class);
@@ -132,7 +132,7 @@ class ClientAdapterImplTest {
             when(clientRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientById(id);
+            Optional<Client> clientReturned = clientPortOut.getClientById(id);
 
             // Assert
             assertThat(clientReturned).isEmpty().isNotNull().isInstanceOf(Optional.class);
@@ -154,7 +154,7 @@ class ClientAdapterImplTest {
             when(clientRepository.findByEmail(any(String.class))).thenReturn(Optional.of(clientEntity));
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientByEmail(email);
+            Optional<Client> clientReturned = clientPortOut.getClientByEmail(email);
 
             // Assert
             assertThat(clientReturned).isPresent().isNotNull().isInstanceOf(Optional.class);
@@ -190,7 +190,7 @@ class ClientAdapterImplTest {
             when(clientRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
 
             // Act
-            Optional<Client> clientReturned = clientAdapter.getClientByEmail(email);
+            Optional<Client> clientReturned = clientPortOut.getClientByEmail(email);
 
             // Assert
             assertThat(clientReturned).isEmpty().isNotNull().isInstanceOf(Optional.class);
@@ -207,7 +207,7 @@ class ClientAdapterImplTest {
             when(clientRepository.findAll()).thenReturn(clientEntityList);
 
             // Act
-            List<Client> clientList = clientAdapter.getAllClients();
+            List<Client> clientList = clientPortOut.getAllClients();
 
             // Assert
             assertThat(clientList)
@@ -238,7 +238,7 @@ class ClientAdapterImplTest {
             when(clientRepository.save(any(ClientEntity.class))).thenReturn(clientEntity);
 
             // Act
-            Client updatedClient = clientAdapter.updateClient(client);
+            Client updatedClient = clientPortOut.updateClient(client);
 
             // Assert
             assertThat(updatedClient).isNotNull().isInstanceOf(Client.class);
@@ -265,7 +265,7 @@ class ClientAdapterImplTest {
             doNothing().when(clientRepository).deleteById(any(Long.class));
 
             // Act
-            clientAdapter.deleteClientById(id);
+            clientPortOut.deleteClientById(id);
 
             // Assert
             verify(clientRepository, times(1)).deleteById(any(Long.class));
@@ -285,7 +285,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsById(any(Long.class))).thenReturn(true);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientById(id);
+            boolean clientExists = clientPortOut.existsClientById(id);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -300,7 +300,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsById(any(Long.class))).thenReturn(false);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientById(id);
+            boolean clientExists = clientPortOut.existsClientById(id);
 
             // Assert
             assertThat(clientExists).isFalse();
@@ -318,7 +318,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsByEmail(any(String.class))).thenReturn(true);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByEmail(email);
+            boolean clientExists = clientPortOut.existsClientByEmail(email);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -333,7 +333,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsByEmail(any(String.class))).thenReturn(false);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByEmail(email);
+            boolean clientExists = clientPortOut.existsClientByEmail(email);
 
             // Assert
             assertThat(clientExists).isFalse();
@@ -351,7 +351,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsByCpf(any(CpfEntity.class))).thenReturn(true);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByCpf(cpf);
+            boolean clientExists = clientPortOut.existsClientByCpf(cpf);
 
             // Assert
             assertThat(clientExists).isTrue();
@@ -369,7 +369,7 @@ class ClientAdapterImplTest {
             when(clientRepository.existsByCpf(any(CpfEntity.class))).thenReturn(false);
 
             // Act
-            boolean clientExists = clientAdapter.existsClientByCpf(cpf);
+            boolean clientExists = clientPortOut.existsClientByCpf(cpf);
 
             // Assert
             assertThat(clientExists).isFalse();

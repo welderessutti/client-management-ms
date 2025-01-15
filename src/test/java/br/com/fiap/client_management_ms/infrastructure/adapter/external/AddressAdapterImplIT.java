@@ -2,7 +2,7 @@ package br.com.fiap.client_management_ms.infrastructure.adapter.external;
 
 import br.com.fiap.client_management_ms.core.domain.Address;
 import br.com.fiap.client_management_ms.core.exception.AddressAdapterApiException;
-import br.com.fiap.client_management_ms.core.port.out.AddressAdapter;
+import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AddressAdapterImplIT {
 
     @Autowired
-    AddressAdapter addressAdapter;
+    AddressPortOut addressPortOut;
 
     @Nested
     class GetAddressByApi {
@@ -30,7 +30,7 @@ class AddressAdapterImplIT {
             String cep = "01001-000";
 
             // Act
-            Address returnedAddress = addressAdapter.getAddressByApi(cep);
+            Address returnedAddress = addressPortOut.getAddressByApi(cep);
 
             // Assert
             assertThat(returnedAddress).isNotNull().isInstanceOf(Address.class);
@@ -58,7 +58,7 @@ class AddressAdapterImplIT {
             String nonExistentCep = "99999-999";
 
             // Act & Assert
-            assertThatThrownBy(() -> addressAdapter.getAddressByApi(nonExistentCep))
+            assertThatThrownBy(() -> addressPortOut.getAddressByApi(nonExistentCep))
                     .isInstanceOf(AddressAdapterApiException.NotFound.class)
                     .hasMessage(nonExistentCep);
         }
@@ -69,7 +69,7 @@ class AddressAdapterImplIT {
             String invalidCep = "999";
 
             // Act & Assert
-            assertThatThrownBy(() -> addressAdapter.getAddressByApi(invalidCep))
+            assertThatThrownBy(() -> addressPortOut.getAddressByApi(invalidCep))
                     .isInstanceOf(AddressAdapterApiException.BadRequest.class)
                     .hasMessage(invalidCep);
         }
