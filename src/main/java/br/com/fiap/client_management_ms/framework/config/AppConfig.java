@@ -2,13 +2,16 @@ package br.com.fiap.client_management_ms.framework.config;
 
 import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
 import br.com.fiap.client_management_ms.core.port.out.AddressPortOut;
+import br.com.fiap.client_management_ms.core.port.out.ClientEventPortOut;
 import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.core.service.AddressService;
 import br.com.fiap.client_management_ms.core.service.ClientServiceImpl;
 import br.com.fiap.client_management_ms.infrastructure.adapter.external.AddressAdapterImpl;
 import br.com.fiap.client_management_ms.infrastructure.adapter.internal.ClientAdapterImpl;
+import br.com.fiap.client_management_ms.infrastructure.adapter.internal.ClientEventAdapterImpl;
 import br.com.fiap.client_management_ms.infrastructure.api.ViaCepApiClient;
 import br.com.fiap.client_management_ms.infrastructure.repository.ClientRepository;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +24,16 @@ public class AppConfig {
     }
 
     @Bean
-    public ClientPortIn clientService(AddressService addressService, ClientPortOut clientPortOut) {
-        return new ClientServiceImpl(addressService, clientPortOut);
+    public ClientEventPortOut clientEventAdapter(StreamBridge streamBridge) {
+        return new ClientEventAdapterImpl(streamBridge);
+    }
+
+    @Bean
+    public ClientPortIn clientService(
+            AddressService addressService,
+            ClientPortOut clientPortOut,
+            ClientEventPortOut clientEventPortOut) {
+        return new ClientServiceImpl(addressService, clientPortOut, clientEventPortOut);
     }
 
     @Bean

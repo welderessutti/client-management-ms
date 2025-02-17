@@ -6,6 +6,7 @@ import br.com.fiap.client_management_ms.core.exception.ClientAlreadyExistsExcept
 import br.com.fiap.client_management_ms.core.exception.ClientNotFoundException;
 import br.com.fiap.client_management_ms.core.mapper.ClientDtoDomainMapper;
 import br.com.fiap.client_management_ms.core.port.in.ClientPortIn;
+import br.com.fiap.client_management_ms.core.port.out.ClientEventPortOut;
 import br.com.fiap.client_management_ms.core.port.out.ClientPortOut;
 import br.com.fiap.client_management_ms.core.updater.ClientUpdater;
 import br.com.fiap.client_management_ms.framework.dto.request.create.ClientCreateRequestDto;
@@ -22,14 +23,20 @@ public class ClientServiceImpl implements ClientPortIn {
 
     private final AddressService addressService;
     private final ClientPortOut clientPortOut;
+    private final ClientEventPortOut clientEventPortOut;
     private static final String EXISTS_WITH_CPF = "Client already exists with CPF: ";
     private static final String EXISTS_WITH_EMAIL = "Client already exists with e-mail: ";
     private static final String NOT_FOUND_WITH_ID = "Client not found with id: ";
     private static final String NOT_FOUND_WITH_EMAIL = "Client not found with e-mail: ";
 
-    public ClientServiceImpl(AddressService addressService, ClientPortOut clientPortOut) {
+    public ClientServiceImpl(
+            AddressService addressService,
+            ClientPortOut clientPortOut,
+            ClientEventPortOut clientEventPortOut
+    ) {
         this.addressService = addressService;
         this.clientPortOut = clientPortOut;
+        this.clientEventPortOut = clientEventPortOut;
     }
 
     @Override
@@ -38,7 +45,9 @@ public class ClientServiceImpl implements ClientPortIn {
         validateClientExistence(client);
         Address returnedAddress = getAddressData(client);
         client.setAddress(returnedAddress);
-        return ClientDtoDomainMapper.toCreateClientResponseDto(clientPortOut.createClient(client));
+        Client createdClient = clientPortOut.createClient(client);
+        clientEventPortOut.sendClientCreatedEvent(createdClient);
+        return ClientDtoDomainMapper.toCreateClientResponseDto(createdClient);
     }
 
     @Override
